@@ -1,11 +1,12 @@
-
-LIB_IMGUI_IFLAGS := lib/imgui/ lib/imgui/backends
-LIB_IMGUI_SRC_FILES := $(wildcard lib/imgui/*.c) \
-					   lib/imgui/backends/imgui_impl_glwf.cpp
+LIB_IMGUI_DIR			:= lib/imgui
+LIB_IMGUI_BACKENDS_DIR	:= $(LIB_IMGUI_DIR)/backends
+LIB_IMGUI_IFLAGS		:= $(LIB_IMGUI_DIR) $(LIB_IMGUI_BACKENDS_DIR)
+LIB_IMGUI_SRC_FILES		:= $(wildcard $(LIB_IMGUI_DIR)/*.c) \
+					   		$(LIB_IMGUI_BACKENDS_DIR)/imgui_impl_glwf.cpp
 
 NAME		:= app
 
-CFLAGS		:= -Wall -Wextra -Werror $(LIB_IMGUI_IFLAGS)
+CFLAGS		:= -std=c++11 -Wformat -Wall -Wextra -Werror $(LIB_IMGUI_IFLAGS) 
 # CFLAGS += -g -fsanitize=address
 
 IFLAGS		:= -I include 
@@ -13,10 +14,12 @@ IFLAGS		:= -I include
 
 SRC_DIR		:= src
 SRC_FILES	:= main.cpp
-SRC_LIST	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES)) $(LIB_IMGUI_SRC_FILES)
+SRC_LIST	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
 OBJ_DIR		:= obj
-OBJ_LIST	:= $(patsubst $(SRC_DIR)/%.c, $(OBJ_DIR)/%.o, $(SRC_LIST))
+OBJ_LIST	:= $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_LIST)) \
+				$(patsubst $(LIB_IMGUI_BACKENDS_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(LIB_IMGUI_SRC_FILES))
+
 
 
 
@@ -26,7 +29,10 @@ all: $(NAME)
 $(NAME): $(OBJ_LIST)
 	$(CXX) $(OBJ_LIST) $(CFLAGS) $(IFLAGS) -o $(NAME)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+	$(CXX) $(CFLAGS) $(IFLAGS) -o $@ -c $<
+
+$(OBJ_DIR)/%.o: $(LIB_IMGUI_SRC_FILES) | $(OBJ_DIR)
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $@ -c $<
 
 $(OBJ_DIR):
