@@ -47,31 +47,36 @@ LIB_IMGUI_DIR			:= lib/imgui
 IMGUI_DIR := $(LIB_IMGUI_DIR)
 
 
-CFLAGS		:= -std=c++11 -Wformat -Wall -Wextra -Werror 
+
+CFLAGS		:= -std=c++11 -Wformat -Wall -Wextra -Werror -g -Wall -Wformat `pkg-config --cflags glfw3` -lGL `pkg-config --static --libs glfw3`
 # CFLAGS += -g -fsanitize=address
 
-IFLAGS		:= -I include  -I$(LIB_IMGUI_IFLAGS)
+IFLAGS		:= -I include  -I$(LIB_IMGUI_DIR) -I$(LIB_IMGUI_DIR)/backends
 
 
 # SOURCES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
 # SOURCES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 # OBJS = $(addsuffix .o, $(basename $(notdir $(SOURCES))))
 
-SRC_DIR		:= src
-SRC_FILES	:= main.cpp
-IMGUI_SRC_FILES += $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
-SRC_FILES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
-SRC_LIST	:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
 
-OBJ_DIR		:= obj
-OBJ_LIST	:= $(patsubst $(SRC_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(SRC_LIST)) \
-				$(patsubst $(LIB_IMGUI_BACKENDS_DIR)/%.cpp, $(OBJ_DIR)/%.o, $(LIB_IMGUI_SRC_FILES))
+IMGUI_SRC_FILES := $(IMGUI_DIR)/imgui.cpp $(IMGUI_DIR)/imgui_demo.cpp $(IMGUI_DIR)/imgui_draw.cpp $(IMGUI_DIR)/imgui_tables.cpp $(IMGUI_DIR)/imgui_widgets.cpp
+IMGUI_SRC_FILES += $(IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
+
+
+SRC_DIR			:= src
+SRC_FILES		:= main.cpp
+
+SRC_LIST		:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))
+SRC_LIST		+= $(IMGUI_SRC_FILES)
+
+OBJ_DIR			:= obj
+OBJ_LIST		:= $(patsubst %.cpp, $(OBJ_DIR)/%.o, $(SRC_LIST))
 
 
 # TODO: Look at libft to create dirs for subdirs
 
 test:
-	echo $(OBJ_LIST)
+	@echo $(SRC_LIST)
 
 all: $(NAME)
 
@@ -79,11 +84,14 @@ all: $(NAME)
 $(NAME): $(OBJ_LIST)
 	$(CXX) $(OBJ_LIST) $(CFLAGS) $(IFLAGS) -o $(NAME)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp | $(OBJ_DIR)
+$(OBJ_DIR)/%.o: %.cpp | $(OBJ_DIR)
+	@mkdir -p $(@D)
 	$(CXX) $(CFLAGS) $(IFLAGS) -o $@ -c $<
+	@echo $<
 
-$(OBJ_DIR)/%.o: $(LIB_IMGUI_SRC_FILES) | $(OBJ_DIR)
-	$(CXX) $(CFLAGS) $(IFLAGS) -o $@ -c $<
+# $(OBJ_DIR)/%.o: $(LIB_IMGUI_SRC_FILES) 
+# 	@mkdir -p $(@D)
+# 	$(CXX) $(CFLAGS) $(IFLAGS) -o $@ -c $<
 
 $(OBJ_DIR):
 	mkdir $(OBJ_DIR)
