@@ -13,6 +13,10 @@ IFLAGS			:= -I include  -I$(LIB_IMGUI_DIR) -I$(LIB_IMGUI_DIR)/backends
 IMGUI_SRC_FILES := $(LIB_IMGUI_DIR)/imgui.cpp $(LIB_IMGUI_DIR)/imgui_demo.cpp $(LIB_IMGUI_DIR)/imgui_draw.cpp $(LIB_IMGUI_DIR)/imgui_tables.cpp $(LIB_IMGUI_DIR)/imgui_widgets.cpp
 IMGUI_SRC_FILES += $(LIB_IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(LIB_IMGUI_DIR)/backends/imgui_impl_opengl3.cpp
 
+HEADER_DIR 		:= include
+HEADER_FILES 	:= config.hpp
+HEADER_LIST		:= $(addprefix $(HEADER_DIR)/, $(HEADER_FILES))
+
 
 SRC_DIR			:= src
 SRC_FILES		:= main.cpp
@@ -28,7 +32,12 @@ all: $(NAME)
 $(NAME): $(OBJ_LIST)
 	$(CXX) $(OBJ_LIST) $(CXXFLAGS) $(IFLAGS) -o $(NAME)
 
-$(OBJ_DIR)/%.o: %.cpp 
+
+$(OBJ_DIR)/%.o: $(LIB_IMGUI_DIR)/%.cpp
+	@mkdir -p $(@D)
+	$(CXX) $(CXXFLAGS) $(IFLAGS) -o $@ -c $<
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.cpp $(HEADER_LIST)
 	@mkdir -p $(@D)
 	$(CXX) $(CXXFLAGS) $(IFLAGS) -o $@ -c $<
 
