@@ -9,7 +9,6 @@ app = App()
 
 def write_to_file(file: Path, data: list[int]) -> None:
     str_data = [str(x) for x in data]
-    print(str_data)
     with file.open("w") as f:
         for sample in str_data:
             f.writelines(f"{sample}\n")
