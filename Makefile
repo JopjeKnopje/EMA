@@ -16,6 +16,7 @@ IMGUI_SRC_FILES += $(LIB_IMGUI_DIR)/backends/imgui_impl_glfw.cpp $(LIB_IMGUI_DIR
 
 SRC_DIR			:= src
 SRC_FILES		:= main.cpp \
+				   gui.cpp \
 				   CsvReader.cpp
 
 SRC_LIST		:= $(addprefix $(SRC_DIR)/, $(SRC_FILES))

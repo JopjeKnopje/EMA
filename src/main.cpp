@@ -3,10 +3,12 @@
 #include <string>
 #include <iostream>
 
+// dirty forward decl from gui.cpp
+int gui_start();
 
 
 
-int main (int argc, char *argv[])
+int main1 (int argc, char *argv[])
 {
 	// 1. generate or read csv file
 	if (argc < 2)
@@ -18,12 +20,15 @@ int main (int argc, char *argv[])
 	auto samples = reader.getData();
 
 	// 2. run through algo
-
-
 	for (auto s : samples)
 	{
 		std::cout << s << std::endl;
 	}
 	
 	return 0;
+}
+
+int main (int argc, char *argv[])
+{
+	return gui_start();
 }
