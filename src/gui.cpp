@@ -91,11 +91,32 @@ int gui_start()
 		ImGui::SetNextWindowPos(use_work_area ? viewport->WorkPos : viewport->Pos);
 		ImGui::SetNextWindowSize(use_work_area ? viewport->WorkSize : viewport->Size);
 
+
+
 		bool p_open = false;
 
 		if (ImGui::Begin("some text", &p_open, flags))
 		{
 			ImGui::Button("Close this window");
+			static float arr[] = { 0.6f, 0.1f, 1.0f, 0.5f, 0.92f, 0.1f, 0.2f };
+			ImGui::PlotLines("Frame Times", arr, IM_COUNTOF(arr));
+
+
+			static float values[90] = {};
+			static int values_offset = 0;
+			static double refresh_time = 0.0;
+			if (false || refresh_time == 0.0)
+				refresh_time = ImGui::GetTime();
+			while (refresh_time < ImGui::GetTime()) // Create data at fixed 60 Hz rate for the demo
+			{
+				static float phase = 0.0f;
+				values[values_offset] = cosf(phase);
+				values_offset = (values_offset + 1) % IM_COUNTOF(values);
+				phase += 0.10f * values_offset;
+				refresh_time += 1.0f / 60.0f;
+			}
+
+		
 		}
     	ImGui::End();
 
